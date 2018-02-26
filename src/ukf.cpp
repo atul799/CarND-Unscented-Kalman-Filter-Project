@@ -32,9 +32,8 @@ UKF::UKF() {
 	//std_a_ = 30;
 	//std_a_ = 0.5;
 	//std_a_ = 1.0;
-	std_a_ = 0.259;
-	//reference for bicycle acceleration is taken from study paper:https://www.diva-portal.org/smash/get/diva2:795377/FULLTEXT01.pdf
-
+	//std_a_ = 0.259; //reference for bicycle acceleration is taken from study paper:https://www.diva-portal.org/smash/get/diva2:795377/FULLTEXT01.pdf
+	std_a_ = 0.5;
 
 	// Process noise standard deviation yaw acceleration in rad/s^2
 	//std_yawdd_ = 30;
