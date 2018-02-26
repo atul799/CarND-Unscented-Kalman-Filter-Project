@@ -224,6 +224,8 @@ int main()
     return -1;
   }
   h.run();
+  //close the data capture file
+  out_file.close();
 }
 
 
