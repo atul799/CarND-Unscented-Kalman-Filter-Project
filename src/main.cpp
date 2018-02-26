@@ -34,9 +34,10 @@ int main()
   // open a file handle to write results for visualization
   //string out_file_name="../outputs/UKF_fwd_high_a_yawdd.out";
   string out_file_name="../outputs/UKF_fwd_low_a_yawdd.out";
-  //string out_file_name="../outputs/EKF_rev.out";
-  //string out_file_name="../outputs/EKF_laseronly.out";
-  //string out_file_name="../outputs/EKF_radaronly.out";
+  //string out_file_name="../outputs/UKF_fwd_low_a_yawdd_laser_unscented.out";
+  //string out_file_name="../outputs/UKF_rev.out";
+  //string out_file_name="../outputs/UKF_laseronly.out";
+  //string out_file_name="../outputs/UKF_radaronly.out";
   ofstream out_file (out_file_name, ofstream::out);
   if (!out_file.is_open())  {
 	  cerr << "Cannot open output file: " << out_file_name << endl;
@@ -118,10 +119,14 @@ int main()
     	  float y_gt;
     	  float vx_gt;
     	  float vy_gt;
+    	  float yaw_gt;
+    	  float yawrate_gt;
     	  iss >> x_gt;
     	  iss >> y_gt;
     	  iss >> vx_gt;
     	  iss >> vy_gt;
+    	  iss >> yaw_gt;
+    	  iss >> yawrate_gt;
     	  VectorXd gt_values(4);
     	  gt_values(0) = x_gt;
     	  gt_values(1) = y_gt; 
@@ -140,6 +145,7 @@ int main()
     	  double p_y = ukf.x_(1);
     	  double v  = ukf.x_(2);
     	  double yaw = ukf.x_(3);
+    	  double yawrate=ukf.x_(4);
 
     	  double v1 = cos(yaw)*v;
     	  double v2 = sin(yaw)*v;
@@ -163,7 +169,13 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
 
           //push the data into output file
-          out_file << p_x <<"\t" << p_y <<"\t"<< v1 <<"\t"<<v2 <<"\t"<< px_meas <<"\t" << py_meas<<"\t"<<x_gt<<"\t"<<y_gt<<"\t"<<vx_gt<<"\t"<<vy_gt<<"\t"<<RMSE(0)<<"\t"<<RMSE(1)<<"\t"<<RMSE(2)<<"\t"<<RMSE(3)<<"\t"<<ukf.NIS_<<"\t"<<ukf.NIS_laser_<<"\t"<<ukf.NIS_radar_<<endl;
+          //out_file << p_x <<"\t" << p_y <<"\t"<< v1 <<"\t"<<v2 <<"\t"<< px_meas <<"\t" << py_meas<<"\t"<<x_gt<<"\t"<<y_gt<<"\t"<<vx_gt<<"\t"<<vy_gt<<"\t"<<RMSE(0)<<"\t"<<RMSE(1)<<"\t"<<RMSE(2)<<"\t"<<RMSE(3)<<"\t"<<ukf.NIS_<<"\t"<<ukf.NIS_laser_<<"\t"<<ukf.NIS_radar_<<endl;
+          //#my_cols=['p1est','p2est','vest','yawest','yawrateest','p1meas','p2meas','p1','p2','v','yaw', 'yawrate','v1_gt','v2_gt', 'NIS_laser', 'NIS_radar']
+          out_file << p_x <<"\t" << p_y <<"\t"<< v <<"\t"<<yaw <<"\t"<< yawrate <<"\t"<< px_meas <<"\t"<< py_meas<<"\t"<<x_gt<<"\t"<<y_gt<<"\t"<<sqrt(vx_gt*vx_gt+vy_gt*vy_gt)<<"\t"<<yaw_gt<<"\t"<<yawrate_gt<<"\t"<<vx_gt<<"\t"<<vy_gt<<"\t"<<ukf.NIS_laser_<<"\t"<<ukf.NIS_radar_<<"\t"<<ukf.NIS_<<"\t"<<RMSE(0)<<"\t"<<RMSE(1)<<"\t"<<RMSE(2)<<"\t"<<RMSE(3)<<endl;
+
+
+
+
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 	  
