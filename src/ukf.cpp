@@ -87,8 +87,19 @@ UKF::UKF() {
 	weights_.fill(1/(2*(lambda_+n_aug_)));
 	weights_(0)=lambda_/(lambda_+n_aug_);
 
-	NIS_=0;
+	NIS_radar_=0;
+	NIS_laser_=0;
 
+
+	NIS_=0;;
+
+
+	R_laser_ <<    std_laspx_*std_laspx_, 0,
+		0,std_laspy_*std_laspy_;
+
+	R_radar_ <<    std_radr_*std_radr_, 0, 0,
+				0, std_radphi_*std_radphi_, 0,
+				0, 0,std_radrd_*std_radrd_;
 
 
 
@@ -384,14 +395,15 @@ Use lidar data to update the belief about the object's
 	VectorXd y = z - z_pred;
 
 
-	MatrixXd R_laser=MatrixXd(2,2);
-	R_laser <<    std_laspx_*std_laspx_, 0,
-			0,std_laspy_*std_laspy_;
+	//MatrixXd R_laser=MatrixXd(2,2);
+	//R_laser <<    std_laspx_*std_laspx_, 0,
+	//		0,std_laspy_*std_laspy_;
+
 	//aply kalman filter equations and update state and covariance mtx with kalman gain,K
 	//the statements below are common to linear and extended kalman, can be created in a function,
 	//function stack vs inline for processing speed....
 	MatrixXd Ht = H_laser.transpose();
-	MatrixXd S = H_laser * P_ * Ht + R_laser;
+	MatrixXd S = H_laser * P_ * Ht + R_laser_;
 	MatrixXd Si = S.inverse();
 	MatrixXd PHt = P_ * Ht;
 	MatrixXd K = PHt * Si;
@@ -406,9 +418,9 @@ Use lidar data to update the belief about the object's
 	cout<<"Updated P_ LASER:  "<<P_<<endl;
 
 
-	double NIS_laser = y.transpose() * S.inverse() * y;
-	cout<<"NIS_laser: "<<NIS_laser<<endl;
-	NIS_=NIS_laser;
+	NIS_laser_ = y.transpose() * S.inverse() * y;
+	cout<<"NIS_laser_: "<<NIS_laser_<<endl;
+	NIS_=NIS_laser_;
 }
 
 /**
@@ -478,12 +490,13 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
 		S = S + weights_(i) * z_diff * z_diff.transpose();
 	}
-	MatrixXd R_radar = MatrixXd(n_z,n_z);
-	R_radar.fill(0.0);
-	R_radar <<    std_radr_*std_radr_, 0, 0,
-			0, std_radphi_*std_radphi_, 0,
-			0, 0,std_radrd_*std_radrd_;
-	S = S + R_radar;
+
+	//MatrixXd R_radar = MatrixXd(n_z,n_z);
+	//R_radar.fill(0.0);
+	//R_radar <<    std_radr_*std_radr_, 0, 0,
+	//		0, std_radphi_*std_radphi_, 0,
+	//		0, 0,std_radrd_*std_radrd_;
+	S = S + R_radar_;
 	//create matrix for cross correlation Tc
 	MatrixXd Tc = MatrixXd(n_x_, n_z);
 	//calculate cross correlation matrix
@@ -523,9 +536,9 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 	P_ = P_ - K*S*K.transpose();
 	cout<<"Updated x_ RADAR x: "<<x_<<endl;
 	cout<<"Updated P_ RADAR:  "<<P_<<endl;
-	double NIS_radar = z_diff.transpose() * S.inverse() * z_diff;
-	cout<<"NIS_radar: "<<NIS_radar<<endl;
-	NIS_=NIS_radar;
+	NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
+	cout<<"NIS_radar_: "<<NIS_radar_<<endl;
+	NIS_=NIS_radar_;
 
 
 }

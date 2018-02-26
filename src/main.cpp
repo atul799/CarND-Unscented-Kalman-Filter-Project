@@ -163,8 +163,7 @@ int main()
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
 
           //push the data into output file
-          out_file << p_x <<"\t" << p_y <<"\t"<< v1 <<"\t"<<v2 <<"\t"<< px_meas <<"\t" << py_meas<<"\t"<<x_gt<<"\t"<<y_gt<<"\t"<<vx_gt<<"\t"<<vy_gt<<"\t"<<RMSE(0)<<"\t"<<RMSE(1)<<"\t"<<RMSE(2)<<"\t"<<RMSE(3)<<"\t"<<ukf.NIS_<<endl;
-
+          out_file << p_x <<"\t" << p_y <<"\t"<< v1 <<"\t"<<v2 <<"\t"<< px_meas <<"\t" << py_meas<<"\t"<<x_gt<<"\t"<<y_gt<<"\t"<<vx_gt<<"\t"<<vy_gt<<"\t"<<RMSE(0)<<"\t"<<RMSE(1)<<"\t"<<RMSE(2)<<"\t"<<RMSE(3)<<"\t"<<ukf.NIS_<<"\t"<<ukf.NIS_laser_<<"\t"<<ukf.NIS_radar_<<endl;
           // std::cout << msg << std::endl;
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 	  

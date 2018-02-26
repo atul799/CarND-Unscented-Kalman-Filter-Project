@@ -70,8 +70,22 @@ public:
   //augmented sigma point
   int n_sig_;
 
+  //NIS of laser
+  double NIS_laser_;
+
+  //NIS of radar
+  double NIS_radar_;
+
   //NIS
   double NIS_;
+
+
+
+  //R_laser
+  MatrixXd R_laser_;
+
+  //R_radar
+  MatrixXd R_radar_;
 
 
   /**
